@@ -16,6 +16,8 @@ $product->setPrix($prix);
 $product->setQteStock($qte_stock);
 $product->setCategorie($categorie);
 $product->setImagePath($image_path);
+//aymen
+
 $product->insertProduct();
 }
 ?>
