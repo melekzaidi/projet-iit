@@ -44,7 +44,7 @@ if (isset($_POST["login"])) {
 
             }
             else{
-                header('Location:sotreshop.php');
+                header('Location:storeshop.php');
 
             }
             exit();

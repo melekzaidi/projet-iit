@@ -1,5 +1,4 @@
 <?php
-    require_once('config.php');
 
 class Product
 {
@@ -49,7 +48,8 @@ class Product
 
     // Insert product into the database
     public function insertProduct()
-    {
+    {         require_once('config.php');
+
         $connection = new Connection();
         $pdo = $connection->connect();
 
@@ -76,6 +76,19 @@ class Product
         $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         return $products; // Return array of all products
+    }
+    public static function selectProductsByCategory($category)
+    {
+        require_once('config.php'); // Assuming this file contains your database connection details
+        $connection = new Connection();
+        $pdo = $connection->connect();
+    
+        // Use prepared statement to prevent SQL injection
+        $stmt = $pdo->prepare("SELECT * FROM products WHERE categorie = ?");
+        $stmt->execute([$category]);
+        $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+        return $products; // Return array of products in the specified category
     }
 }
 ?>

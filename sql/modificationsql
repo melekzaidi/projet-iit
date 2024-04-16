@@ -1,0 +1,5 @@
+CREATE TABLE `test` (
+	`id1` INT NULL
+)
+COLLATE='utf8mb4_0900_ai_ci'
+;
