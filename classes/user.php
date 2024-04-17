@@ -1,6 +1,7 @@
 <?php
 class User
-{
+{    public $id;
+
     public $username;
     public $password;
     public $email;
@@ -22,6 +23,11 @@ class User
     public function getUsername()
     {
         return $this->username;
+    }
+
+    public function getId()
+    {
+        return $this->id;
     }
 
     public function setUsername(string $username)
@@ -47,6 +53,7 @@ class User
 
         // Using prepared statements to prevent SQL injection
         $stmt = $PDO->prepare("INSERT INTO user(username, password, email) VALUES(:username, :password, :email)");
+        
         $stmt->bindParam(':username', $this->username);
         $stmt->bindParam(':password', $this->password);
         $stmt->bindParam(':email', $this->email);
@@ -58,6 +65,7 @@ class User
         $cnx = new Connection();
         $PDO = $cnx->connect();
         $stmt = $PDO->prepare("SELECT * FROM user WHERE username = :username AND password = :password");
+        
         $stmt->bindParam(':username', $this->username);
         $stmt->bindParam(':password', $this->password);
         $stmt->execute(); // Execute the prepared statement

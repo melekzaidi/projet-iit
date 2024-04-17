@@ -3,7 +3,7 @@ require_once('classes/user.php');
 require_once("classes/config.php");
 $user = new User();
 
-session_start();
+
 
 // Signup Logic
 if (isset($_POST["signup"])) {
@@ -23,7 +23,7 @@ if (isset($_POST["signup"])) {
     } catch (Exception $ex) {
         $_SESSION["error"] = $ex->getMessage();
         header('location: error.php'); // Redirect to error page
-        exit();
+       
     }
 }
 
@@ -32,30 +32,29 @@ if (isset($_POST["login"])) {
     $loginUsername = $_POST['loginusername'];
     $loginPassword = $_POST['loginpassword'];
     $user->setUsername($loginUsername);
+    
     $user->setPassword($loginPassword); // Assuming setPassword method exists to set password
     try {
         $users = $user->select_user();
         if (count($users) == 0) {
             throw new Exception('Login failed');
         } else {
-            if($loginUsername==='admin')
-            {
-                header('Location:dashboard.php');
-
+            if($loginUsername === 'admin') {
+                $_SESSION['login'] = 'loginadmin';
+            } else {
+                $_SESSION['login'] = 'loginuser';
             }
-            else{
-                header('Location:storeshop.php');
-
-            }
-            exit();
+            $_SESSION['username'] = $loginUsername;
+            header('Location: storeshop.php');
+            exit(); // Always exit after redirection
         }
     } catch (Exception $ex) {
         $_SESSION["error"] = $ex->getMessage();
         header('Location: error.php'); // Redirect to error page
-        exit();
+        exit(); // Always exit after redirection
     }
-    // If authentication fails, display an error message or handle it as per your requirement
 }
+
 
 ?>
 

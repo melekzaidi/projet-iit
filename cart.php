@@ -1,9 +1,47 @@
 
 <?php
  session_start();
+ require_once('classes/facture.php');
+ require_once('classes/config.php');
  $ventes=$_SESSION["ventes"];
+ print_r($_COOKIE['username']);/*
+ if(isset($_POST['checkout'])){
+  if(isset($_SESSION['username'])) {
+    $username = $_SESSION['username'];
+    // Initialize variables
+  $total = 0;
+  
+  // Calculate total amount
+  foreach ($ventes as $vente) {
+      $prix = $vente['prix'];
+      $quantity = isset($vente['quantity']) ? intval($vente['quantity']) : 1;
+      $total += ($prix * $quantity);
+  }
+  
+  // Create a new Order object
+  $order = new Order();
+  
+  // Set order details
+  $order->setMontant($total);
+  $order->setusername($username );
+  $order->setDate(date('Y-m-d H:i:s')); // Assuming you want to store the current date and time
 
+  // Insert order into the database
+  $order->insertOrder();
+  
+  // Clear the cart after checkout
+  $_SESSION['ventes'] = [];
+
+    // Proceed with setting the iduser property and other operations
+} else {
+    // Handle the case where $_SESSION['iduser'] is not set
+    echo "Session iduser is not set.";
+}
+
+  
+}*/
 ?>
+
 <style>
     @import url(https://fonts.googleapis.com/css?family=Fredoka+One);
 
@@ -303,7 +341,9 @@ td.checkout {
           
           <!-- checkout btn -->
           <tr class="checkoutrow">
-            <td colspan="6" class="checkout"><button id="submitbtn">Checkout Now!</button></td>
+            <form method='post'>
+            <td colspan="6" class="checkout"><button name='checkout' id="submitbtn">Checkout Now!</button></td>
+          </from>
           </tr>
         </tbody>
       </table>

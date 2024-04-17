@@ -2,6 +2,8 @@
 	require_once("classes/config.php");
 	require_once("classes/Product.php");
 	$product = new Product();
+
+    print_r($_SESSION['username']); 
 ?>
 <!DOCTYPE html>
 <html lang="en">
