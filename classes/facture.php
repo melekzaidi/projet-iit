@@ -47,9 +47,9 @@ public function insertOrder()
     $connection = new Connection();
     $pdo = $connection->connect();
 
-    $stmt = $pdo->prepare("INSERT INTO facture (montant, iduser, date) VALUES (:montant, :username, :date)");
+    $stmt = $pdo->prepare("INSERT INTO facture (montant, username, date) VALUES (:montant, :username, :date)");
     $stmt->bindParam(':montant', $this->montant);
-    $stmt->bindParam(':iduser', $this->username);
+    $stmt->bindParam(':username', $this->username);
     $stmt->bindParam(':date', $this->date);
 
     $stmt->execute();

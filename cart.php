@@ -1,47 +1,46 @@
-
 <?php
- session_start();
- require_once('classes/facture.php');
- require_once('classes/config.php');
- $ventes=$_SESSION["ventes"];
- print_r($_COOKIE['username']);/*
- if(isset($_POST['checkout'])){
-  if(isset($_SESSION['username'])) {
-    $username = $_SESSION['username'];
-    // Initialize variables
-  $total = 0;
-  
-  // Calculate total amount
-  foreach ($ventes as $vente) {
-      $prix = $vente['prix'];
-      $quantity = isset($vente['quantity']) ? intval($vente['quantity']) : 1;
-      $total += ($prix * $quantity);
-  }
-  
-  // Create a new Order object
-  $order = new Order();
-  
-  // Set order details
-  $order->setMontant($total);
-  $order->setusername($username );
-  $order->setDate(date('Y-m-d H:i:s')); // Assuming you want to store the current date and time
+session_start();
+require_once('classes/facture.php');
+require_once('classes/config.php');
+require_once('classes/Product.php');
 
-  // Insert order into the database
-  $order->insertOrder();
-  
-  // Clear the cart after checkout
-  $_SESSION['ventes'] = [];
+$ventes = $_SESSION["ventes"];
 
-    // Proceed with setting the iduser property and other operations
-} else {
-    // Handle the case where $_SESSION['iduser'] is not set
-    echo "Session iduser is not set.";
+if (isset($_POST['checkout'])) {
+    if (isset($_SESSION['username'])) {
+        $username = $_SESSION['username'];
+        // Initialize variables
+        $total = 0;
+
+        // Calculate total amount
+        foreach ($ventes as &$vente) { // Use &$vente to modify the original array
+            $prix = $vente['prix'];
+            $quantity = isset($_POST[$vente['id']]) ? intval($_POST[$vente['id']]) : 1; // Get updated quantity from POST
+            $vente['quantity'] = $quantity; // Update quantity in $vente
+            $total += ($prix * $quantity);
+        }
+
+        // Create a new Order object
+        $order = new Order();
+
+        // Set order details
+        $order->setMontant($total);
+        $order->setusername($username);
+        $order->setDate(date('Y-m-d H:i:s')); // Assuming you want to store the current date and time
+
+        // Insert order into the database
+        $order->insertOrder();
+
+        // Clear the cart after checkout
+        $_SESSION['ventes'] = [];
+        header("Location: storeshop.php");
+        exit();
+    } else {
+        // Handle the case where $_SESSION['iduser'] is not set
+        echo "Session iduser is not set.";
+    }
 }
-
-  
-}*/
 ?>
-
 <style>
     @import url(https://fonts.googleapis.com/css?family=Fredoka+One);
 
@@ -308,16 +307,22 @@ td.checkout {
         <tbody>
         <?php       
             if (!empty($ventes)) {
-                foreach ($ventes as $vente) {
+                foreach ($ventes as &$vente) {
                     $id=$vente["id"];
                     $image = $vente['image'];
                     $prix = $vente['prix'];
                     $name = $vente['nom'];   
+                    $productId = $vente['id'];
+                    $quantity = isset($vente['quantity']) ? intval($vente['quantity']) : 1;
+                    $product = new Product();
+                    $product->decreaseStock($productId, $quantity);
+                    
                     echo '<script>updateTotal(document.querySelector(\'#' . $id . '\'));</script>';
 
                     echo '<tr class="productitm">
                     <td><img height=100px src=' . $image . ' class="thumb"></td>
-                    <td><input type="number" value="1" min="0" max="99" id='.$id.' class="qtyinput" onchange="updateTotal(this)"></td>
+                    <td><input type="number" value="'.$quantity.'" min="0" max="99" name="'.$id.'" class="qtyinput" onchange="updateTotal(this)">
+                    </td>
                     <td>'.$name.'</td>
                     <td class="productprice">$'.$prix.'</td>
                     <td class="producttotal">$'.$prix.'</td>
@@ -334,47 +339,45 @@ td.checkout {
           <!-- tax + subtotal -->
    
           <tr class="totalprice">
-            <td class="light">Total:</td>
-            <td colspan="4">&nbsp;</td>
-            <td><span class="thick grandtotal">$0</span></td>
-          </tr>
-          
-          <!-- checkout btn -->
-          <tr class="checkoutrow">
-            <form method='post'>
-            <td colspan="6" class="checkout"><button name='checkout' id="submitbtn">Checkout Now!</button></td>
-          </from>
-          </tr>
-        </tbody>
-      </table>
+                        <td class="light">Total:</td>
+                        <td colspan="4">&nbsp;</td>
+                        <td><span class="thick grandtotal">$0</span></td>
+                    </tr>
+
+                    <!-- checkout btn -->
+                    <tr class="checkoutrow">
+                        <form method='post'>
+                            <td colspan="6" class="checkout"><button name='checkout' id="submitbtn">Checkout Now!</button></td>
+                        </form>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
-  </div>
-  <script>
-    // Initialize Line Total based on initial quantity of 1
+    <script>
+      function updateTotal(input) {
+    var row = input.parentNode.parentNode;
+    var price = parseFloat(row.querySelector('.productprice').innerText.replace('$', ''));
+    var quantity = input.value;
+    var total = price * quantity;
+    row.querySelector('.producttotal').innerText = '$' + total.toFixed(2);
 
-    function updateTotal(input) {
-  var row = input.parentNode.parentNode;
-  var price = parseFloat(row.querySelector('.productprice').innerText.replace('$', ''));
-  var quantity = input.value;
-  var total = price * quantity;
-  row.querySelector('.producttotal').innerText = '$' + total.toFixed(2);
-
-  // Update grand total
-  var grandTotal = 0;
-  var productTotals = document.querySelectorAll('.producttotal');
-  productTotals.forEach(function(element) {
-    grandTotal += parseFloat(element.innerText.replace('$', ''));
-  });
-  document.querySelector('.grandtotal').innerText = '$' + grandTotal.toFixed(2);
+    // Update grand total
+    var grandTotal = 0;
+    var productTotals = document.querySelectorAll('.producttotal');
+    productTotals.forEach(function(element) {
+        grandTotal += parseFloat(element.innerText.replace('$', ''));
+        
+    });
+    document.querySelector('.grandtotal').innerText = '$' + grandTotal.toFixed(2);
 }
-var grandTotal = 0;
-  var productTotals = document.querySelectorAll('.producttotal');
-  productTotals.forEach(function(element) {
-    grandTotal += parseFloat(element.innerText.replace('$', ''));
-  });
-  document.querySelector('.grandtotal').innerText = '$' + grandTotal.toFixed(2);
-  </script>
+        var grandTotal = 0;
+        var productTotals = document.querySelectorAll('.producttotal');
+        productTotals.forEach(function(element) {
+            grandTotal += parseFloat(element.innerText.replace('$', ''));
+        });
+        document.querySelector('.grandtotal').innerText = '$' + grandTotal.toFixed(2);
+    </script>
 </body>
-
 
 </html>

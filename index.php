@@ -2,7 +2,7 @@
 require_once('classes/user.php');
 require_once("classes/config.php");
 $user = new User();
-
+session_start();
 
 
 // Signup Logic
@@ -41,11 +41,14 @@ if (isset($_POST["login"])) {
         } else {
             if($loginUsername === 'admin') {
                 $_SESSION['login'] = 'loginadmin';
+                header('Location: dashboard.php');
+
             } else {
                 $_SESSION['login'] = 'loginuser';
+                header('Location: storeshop.php');
+
             }
             $_SESSION['username'] = $loginUsername;
-            header('Location: storeshop.php');
             exit(); // Always exit after redirection
         }
     } catch (Exception $ex) {

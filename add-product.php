@@ -1,5 +1,7 @@
 <?php
   require_once('classes/Product.php');
+  require_once('classes/config.php');
+
   $product=new Product();
 
 if (isset($_POST["add_product"])) {
@@ -62,6 +64,16 @@ $product->insertProduct();
             <i class="fas fa-shopping-cart"></i> Add Products
           </a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" href="listproduct.php">
+            <i class="fas fa-list"></i> List Products
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="edit-product.php">
+            <i class="fas fa-edit"></i> Edit Products
+          </a>
+        </li>
       </ul>
       <ul class="navbar-nav">
         <li class="nav-item">
@@ -73,6 +85,7 @@ $product->insertProduct();
     </div>
   </div>
 </nav>
+
     <div class="container tm-mt-big tm-mb-big">
       <div class="row">
         <div class="col-xl-9 col-lg-10 col-md-12 col-sm-12 mx-auto">
@@ -132,10 +145,11 @@ $product->insertProduct();
                       id="category" name="categorie"
                     >
                       <option selected>Select category</option>
-                      <option value="Laptops">Laptops</option>
-                      <option value="Smartphones">Smartphones</option>
-                      <option value="Cameras">Cameras</option>
-                      <option value="Accessories">Accessories</option>
+                      <option value="Ordinateurs portables">Laptops</option>
+                      <option value="Accessoires informatiques">Smartphones</option>
+                      <option value="Stockage externe">Cameras</option>
+                      <option value="Moniteurs">Accessories</option>
+                      <option value="Claviers">Accessories</option>
 
                       
                     </select>
