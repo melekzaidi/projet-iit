@@ -3,9 +3,8 @@ session_start();
 require_once('classes/facture.php');
 require_once('classes/config.php');
 require_once('classes/Product.php');
-
-$ventes = $_SESSION["ventes"];
-
+if(isset($_SESSION["ventes"]))
+{$ventes = $_SESSION["ventes"];}
 if (isset($_POST['checkout'])) {
     if (isset($_SESSION['username'])) {
         $username = $_SESSION['username'];
@@ -29,11 +28,14 @@ if (isset($_POST['checkout'])) {
         $order->setDate(date('Y-m-d H:i:s')); // Assuming you want to store the current date and time
 
         // Insert order into the database
-        $order->insertOrder();
+        $idFacture = $order->insertOrder();  // Assume this method returns the idFacture
 
+        // Store total and idFacture in session
+        $_SESSION['total'] = $total;
+        $_SESSION['idfacture'] = $idFacture;
         // Clear the cart after checkout
         $_SESSION['ventes'] = [];
-        header("Location: storeshop.php");
+        header("Location: payment.php");
         exit();
     } else {
         // Handle the case where $_SESSION['iduser'] is not set

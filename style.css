@@ -398,3 +398,27 @@ form
 	 color: #ffc39e;
 }
  
+
+/* Style the select dropdown */
+#categoryFilter::-ms-expand {
+    display: none; /* Hide default dropdown arrow in IE */
+}
+
+#categoryFilter {
+    position: relative;
+    width: 200px; /* Set the width */
+}
+
+#categoryFilter::after {
+    content: "";
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid #333;
+    pointer-events: none;
+}

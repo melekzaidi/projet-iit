@@ -6,57 +6,74 @@ session_start();
 
 
 // Signup Logic
+// Signup Logic
 if (isset($_POST["signup"])) {
     $username = $_POST['signupusername'];
     $password = $_POST['signuppassword'];
     $email = $_POST['signupemail'];
+    $cardnumber = $_POST['signupcardnumber'];
+    $placeholdercarder = $_POST['signupplaceholdercarder']; // Cardholder name
+    $cvc = $_POST['signupcvc'];
+    $expires = $_POST['signupexpires'];
 
     try {
         $user->setUsername($username);
         $user->setPassword($password);
         $user->setEmail($email);
+        $user->setCardnumber($cardnumber);
+        $user->setPlaceholdercarder($placeholdercarder); // Set cardholder name
+        $user->setCvc($cvc); // Set CVC
+        $user->setExpires($expires);
 
         $user->insert_user();
-        $_SESSION["success"]="Signup succeded";
-        header('location: success.php'); // Redirect to error page
-
+        $_SESSION["success"] = "Signup succeeded";
+        header('location: success.php'); // Redirect to success page
+        exit(); // Always exit after redirection
     } catch (Exception $ex) {
         $_SESSION["error"] = $ex->getMessage();
         header('location: error.php'); // Redirect to error page
-       
+        exit(); // Always exit after redirection
     }
 }
+
+
 
 // Login Logic
 if (isset($_POST["login"])) {
     $loginUsername = $_POST['loginusername'];
     $loginPassword = $_POST['loginpassword'];
     $user->setUsername($loginUsername);
-    
-    $user->setPassword($loginPassword); // Assuming setPassword method exists to set password
+    $user->setPassword($loginPassword);
+
     try {
         $users = $user->select_user();
         if (count($users) == 0) {
             throw new Exception('Login failed');
         } else {
-            if($loginUsername === 'admin') {
+            $userData = $users[0];
+
+            if ($loginUsername === 'admin') {
                 $_SESSION['login'] = 'loginadmin';
                 header('Location: dashboard.php');
-
             } else {
                 $_SESSION['login'] = 'loginuser';
                 header('Location: storeshop.php');
-
             }
+
             $_SESSION['username'] = $loginUsername;
-            exit(); // Always exit after redirection
+            $_SESSION['cardnumber'] = $userData->cardnumber;
+            $_SESSION['placeholdercarder'] = $userData->placeholdercarder;
+            $_SESSION['cvc'] = $userData->cvc; // Store CVC in session
+            $_SESSION['expires'] = $userData->expires;
+            exit();
         }
     } catch (Exception $ex) {
         $_SESSION["error"] = $ex->getMessage();
-        header('Location: error.php'); // Redirect to error page
-        exit(); // Always exit after redirection
+        header('Location: error.php');
+        exit();
     }
 }
+
 
 
 ?>
@@ -82,18 +99,22 @@ if (isset($_POST["login"])) {
         </form>
     </div>
     <div class="form signup">
-        <header >Signup</header>
+        <header>Signup</header>
         <form action="#" method="post">
-            <input type="text" name="signupusername" placeholder="Full name" required/>
-            <input type="text" name="signupemail" placeholder="Email address" required/>
-            <input type="password" name="signuppassword" placeholder="Password" required/>
+            <input type="text" name="signupusername" placeholder="Full name" style="height:35px" required/>
+            <input type="text" name="signupemail" placeholder="Email address" style="height:35px" required/>
+            <input type="password" name="signuppassword" placeholder="Password" style="height:35px" required/>
+            <input type="text" name="signupcardnumber" placeholder="Card Number" style="height:35px" required/>
+            <input type="text" name="signupplaceholdercarder" placeholder="Cardholder Name" style="height:35px" required/>
+            <input type="text" name="signupcvc" placeholder="CVC" style="height:35px" required/>
+            <input type="text" name="signupexpires" placeholder="Expiry Date (MM/YY)" required/>
             <div class="checkbox">
                 <input type="checkbox" id="signupCheck"/>
                 <label for="signupCheck">I accept all terms & conditions</label>
             </div>
             <input name="signup" type="submit" value="Signup"/>
         </form>
-    </div>
+</div>
 
     
 
